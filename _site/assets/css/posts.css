@@ -1,0 +1,126 @@
+/* Posts.html */
+
+html, body {
+    height: 100%;
+    margin: 0px;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-content {
+    flex: 1;
+}
+
+/**
+ * Wrapper
+ */
+ .wrapper {
+    max-width: -webkit-calc(1200px - (30px * 2));
+    max-width: calc(1200px - 30px * 2);
+    margin-right: auto;
+    margin-left: auto;
+    padding-right: 30px;
+    padding-left: 30px;
+    margin-top: 30px;
+  }
+  @media screen and (max-width: 800px) {
+    .wrapper {
+      max-width: -webkit-calc(1200px - (30px));
+      max-width: calc(1200px - (30px));
+      padding-right: 15px;
+      padding-left: 15px;
+      margin-top: 10px;
+    }
+  }
+  
+
+/* position of the title Posts */
+h2 {
+    display: flex;
+    align-items: left;
+    justify-content: left;
+    margin-right: 40px;
+    
+}
+
+/* search bar width */
+.input-group {
+    width: 50%;
+}
+
+
+/* Separaor after title and search bar */
+.top-separator::before {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 100%; /* Width of the first line */
+  height: 2px; /* Height (thickness) of the first line */
+  background: #ddd; /* Color of the first line */
+  bottom: 1px; /* Position from the bottom of the element */
+  left: 50%; /* Centering the line */
+  transform: translateX(-50%); /* Precise centering */
+}
+
+
+
+.top-separator {
+  position: relative; /* Required for absolute positioning of pseudo-elements */
+  height: 10px; /* Adjust as needed, should be enough to contain both ::before and ::after */
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+  
+
+
+.separator::before {
+    content: "";
+    position: absolute;
+    display: block;
+    width: 100%; /* Width of the first line */
+    height: 1px; /* Height (thickness) of the first line */
+    background: #ddd; /* Color of the first line */
+    bottom: 1px; /* Position from the bottom of the element */
+    left: 50%; /* Centering the line */
+    transform: translateX(-50%); /* Precise centering */
+  }
+  
+
+  
+.separator {
+    position: relative; /* Required for absolute positioning of pseudo-elements */
+    height: 10px; /* Adjust as needed, should be enough to contain both ::before and ::after */
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.pagination {
+  align-items: center;
+  text-align: center; /* Center align the pagination container */
+  margin: 20px 0; /* Add some margin above and below the pagination */
+}
+
+.page-number, .page-previous, .page-next {
+  margin: 0 10px; /* Add horizontal margin to each pagination item */
+  display: inline-block; /* This makes sure that margin is applied correctly */
+}
+
+/* You can add more styles for hover effects, colors, etc., as needed */
+.page-number:hover, .page-previous:hover, .page-next:hover {
+  text-decoration: underline;
+}
+
+/* Style for the current page number */
+.current {
+  font-weight: bold;
+  pointer-events: none; /* Disables the link, since it's the current page */
+}
+
+  
+  
+
+
+
+
+ 

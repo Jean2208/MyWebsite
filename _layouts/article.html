@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  {% include head.html %}
+
+  <link href="/assets/css/style.css" rel="stylesheet" />
+
+  <link href="/assets/css/article.css" rel="stylesheet" />
+  
+</head>
+
+
+  <body>
+
+    {% include header.html %}
+
+    <div class="main-content" data-aos="fade-up">
+
+    <div class="wrapper">
+
+        <div class="top-container"> 
+
+        <div class="article-title"> {{ page.title }} </div>
+
+        <div class="article-date"> {{ page.date | date: "%Y-%m-%d" }} </div>
+
+        </div>
+        
+        {{ content }}
+    
+    </div>
+
+    </div>
+
+  {% include footer.html %} 
+  {% include arrowup.html %} 
+  {% include JSfiles.html %}
+
+</body>
+
+</html>
