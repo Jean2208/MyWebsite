@@ -1,106 +1,86 @@
 ---
-permalink: /posts/
+permalink: /posts
 pagination:
-  enabled: true
+enabled: true
 ---
 
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    {% include head.html %}
 
-    <!-- Template Main CSS File -->
-    <link href="/assets/css/style.css" rel="stylesheet" />
+<head>
+  {% include head.html %}
 
-    <link href="{{ 'assets/css/posts.css' | relative_url }}" rel="stylesheet" />
-  </head>
+  <!-- Template Main CSS File -->
+  <link href="/assets/css/style.css" rel="stylesheet" />
+  <link href="/assets/css/navbar.css" rel="stylesheet" />
+  <link href="{{ 'assets/css/posts.css' | relative_url }}" rel="stylesheet" />
+</head>
 
-  <body>
-    <!-- ======= Mobile nav toggle button ======= -->
-    <!-- <button type="button" class="mobile-nav-toggle d-xl-none"><i class="bi bi-list mobile-nav-toggle"></i></button> -->
-    <i class="bi bi-list mobile-nav-toggle d-lg-none"></i>
-    <!-- ======= Header ======= -->
-    <header id="header" class="d-flex flex-column justify-content-center">
-      <nav id="navbar" class="navbar nav-menu">
-        <ul>
-          <li>
-            <a href="/index"
-              ><i class="bx bx-home"></i> <span>Back to Home</span></a
-            >
-          </li>
-        </ul>
-      </nav>
-      <!-- .nav-menu -->
-    </header>
-    <!-- End Header -->
+<body>
 
-    <div class="main-content">
-      <!-- Your main page content -->
+  <!-- ======= Header ======= -->
+  <header>
+    {% include header.html %}
+  </header>
+  <!-- End Header -->
 
-      <div class="wrapper" data-aos="fade-up">
-        <div class="row" data-aos="fade-up">
-          <div class="col-md-2" data-aos="fade-up">
-            <h2>Posts</h2>
-          </div>
-          <div class="col-md-10" data-aos="fade-up">
-            <div class="input-group mb-3">
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Search..."
-                aria-label="Search"
-              />
-              <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button">
-                  <i class="fas fa-search"></i>
-                </button>
-              </div>
+  <div class="main-content">
+    <!-- Your main page content -->
+
+    <div class="wrapper" data-aos="fade-up">
+      <div class="row" data-aos="fade-up">
+        <div class="col-md-2" data-aos="fade-up">
+          <h2>Posts</h2>
+        </div>
+        <div class="col-md-10" data-aos="fade-up">
+          <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Search..." aria-label="Search" />
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary" type="button">
+                <i class="fas fa-search"></i>
+              </button>
             </div>
           </div>
         </div>
+      </div>
 
-        <div class="top-separator" data-aos="fade-up"></div>
+      <div class="top-separator" data-aos="fade-up"></div>
 
-        <div class="articles-summary" data-aos="fade-up">
-          {% for post in paginator.posts %}
-          <div class="article">
-            <h2>
-              <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-            </h2>
-            <p class="date">{{ post.date | date: '%B %d, %Y' }}</p>
-            <p class="excerpt">
-              {{ post.excerpt | strip_html | truncate: 160 }}
-            </p>
-          </div>
-          <div class="separator" data-aos="fade-up"></div>
-          {% endfor %}
+      <div class="articles-summary" data-aos="fade-up">
+        {% for post in paginator.posts %}
+        <div class="article">
+          <h2>
+            <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+          </h2>
+          <p class="date">{{ post.date | date: '%B %d, %Y' }}</p>
+          <p class="excerpt">
+            {{ post.excerpt | strip_html | truncate: 160 }}
+          </p>
         </div>
-        {% if paginator.total_pages > 1 %}
-        <div class="pagination">
-          {% if paginator.previous_page %}
-          <a href="{{ paginator.previous_page_path }}" class="page-previous"
-            >&laquo; Prev</a
-          >
-          {% endif %} {% for page in (1..paginator.total_pages) %} {% if page ==
-          paginator.page %}
-          <span class="page-number current">{{ page }}</span>
-          {% else %} {% if page == 1 %}
-          <a href="/posts/" class="page-number">1</a>
-          {% else %}
-          <a href="{{ '/posts/' | append: page }}" class="page-number"
-            >{{ page }}</a
-          >
-          {% endif %} {% endif %} {% endfor %} {% if paginator.next_page %}
-          <a href="{{ paginator.next_page_path }}" class="page-next"
-            >Next &raquo;</a
-          >
-          {% endif %}
-        </div>
+        <div class="separator" data-aos="fade-up"></div>
+        {% endfor %}
+      </div>
+      {% if paginator.total_pages > 1 %}
+      <div class="pagination">
+        {% if paginator.previous_page %}
+        <a href="{{ paginator.previous_page_path }}" class="page-previous">&laquo; Prev</a>
+        {% endif %} {% for page in (1..paginator.total_pages) %} {% if page ==
+        paginator.page %}
+        <span class="page-number current">{{ page }}</span>
+        {% else %} {% if page == 1 %}
+        <a href="/posts/" class="page-number">1</a>
+        {% else %}
+        <a href="{{ '/posts/' | append: page }}" class="page-number">{{ page }}</a>
+        {% endif %} {% endif %} {% endfor %} {% if paginator.next_page %}
+        <a href="{{ paginator.next_page_path }}" class="page-next">Next &raquo;</a>
         {% endif %}
       </div>
+      {% endif %}
     </div>
+  </div>
 
-    {% include footer.html %} {% include arrowup.html %} {% include JSfiles.html
-    %}
-  </body>
+  {% include footer.html %} {% include arrowup.html %} {% include JSfiles.html
+  %}
+</body>
+
 </html>

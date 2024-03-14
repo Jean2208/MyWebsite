@@ -1,22 +1,17 @@
-<!-- ======= Mobile nav toggle button ======= -->
-<!-- <button type="button" class="mobile-nav-toggle d-xl-none"><i class="bi bi-list mobile-nav-toggle"></i></button> -->
-<i class="bi bi-list mobile-nav-toggle d-lg-none"></i>
+
 <!-- ======= Header ======= -->
-<header id="header" class="d-flex flex-column justify-content-center">
-  <nav id="navbar" class="navbar nav-menu">
-    <ul>
-      <li>
-        <a href="/index"
-          ><i class="bx bx-home"></i> <span>Back to Home</span></a
-        >
-      </li>
-      <li>
-        <a href="/posts"
-          ><i class="bx bx-file-blank"></i> <span>Back to Posts</span></a
-        >
-      </li>
-    </ul>
+  <nav>
+    <div class="wrapper">
+      <div class="logo"><a href="#">Jean</a></div>
+      <input type="radio" name="slider" id="menu-btn">
+      <input type="radio" name="slider" id="close-btn">
+      <ul class="nav-links">
+        <label for="close-btn" class="btn close-btn"><i class="fas fa-times"></i></label>
+        <li><a href="/">Home</a></li>
+        <li><a href="/posts">Posts</a></li>
+        <li><a href="#">About Me</a></li>
+      </ul>
+      <label for="menu-btn" class="btn menu-btn"><i class="fas fa-bars"></i></label>
+    </div>
   </nav>
-  <!-- .nav-menu -->
-</header>
 <!-- End Header -->
