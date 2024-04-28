@@ -12,15 +12,16 @@ enabled: true
 
   <!-- Template Main CSS File -->
   <link href="/assets/css/style.css" rel="stylesheet" />
-  <link href="/assets/css/navbar.css" rel="stylesheet" />
   <link href="{{ 'assets/css/posts.css' | relative_url }}" rel="stylesheet" />
+  <link href="/assets/css/navbar.css" rel="stylesheet" />
+  
 </head>
 
 <body>
 
   <!-- ======= Header ======= -->
   <header>
-    {% include header.html %}
+    {% include navbar.html %}
   </header>
   <!-- End Header -->
 
@@ -47,7 +48,7 @@ enabled: true
       <div class="top-separator" data-aos="fade-up"></div>
 
       <div class="articles-summary" data-aos="fade-up">
-        {% for post in paginator.posts %}
+        {% for post in site.posts %}
         <div class="article">
           <h2>
             <a href="{{ post.url | relative_url }}">{{ post.title }}</a>

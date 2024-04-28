@@ -19,18 +19,6 @@ html, body {
   margin-bottom: 50px;
 }
 
-img {
-  margin-top: 20px;
-  margin-bottom: 20px;
-  border: 1px solid black;
-  border-radius: 5px;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  width: 50%;
-  height: auto;
-}
-
 /**
 * Wrapper
 */
@@ -38,14 +26,14 @@ img {
  * Wrapper
  */
  .wrapper {
-  max-width: -webkit-calc(1200px - (30px * 2));
-  max-width: calc(1200px - 30px * 2);
+  max-width: calc(800px - 30px * 2);
   margin-right: auto;
   margin-left: auto;
   padding-right: 30px;
   padding-left: 30px;
   margin-top: 30px;
 }
+
 @media screen and (max-width: 800px) {
   .wrapper {
     max-width: -webkit-calc(1200px - (30px));
@@ -55,12 +43,54 @@ img {
     margin-top: 10px;
   }
 }
+
+.article-image {
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+.article-image img {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  border: 1px solid black;
+  border-radius: 5px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  height: auto;
+}
+
+.article-image p {
+  display: grid;
+  justify-content: center;
+  color: gray;
+}
+
+.article-code {
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+.article-code p {
+  display: grid;
+  justify-content: center;
+  color: gray;
+}
  
 /**
 * Code formatting
 */
-pre,
+pre {
+  font-size: 15px;
+  border: 1px solid #e8e8e8;
+  border-radius: 3px;
+  background-color: #eef;
+
+}
+
 code {
+  color: black;
   font-size: 15px;
   border: 1px solid #e8e8e8;
   border-radius: 3px;
@@ -181,7 +211,7 @@ pre > code {
   color: #099;
 }
 .highlight .s {
-  color: #d14;
+  color: #0563bb;
 }
 .highlight .na {
   color: #008080;
@@ -235,34 +265,34 @@ pre > code {
   color: #099;
 }
 .highlight .sb {
-  color: #d14;
+  color: #0563bb;
 }
 .highlight .sc {
-  color: #d14;
+  color: #0563bb;
 }
 .highlight .sd {
-  color: #d14;
+  color: #0563bb;
 }
 .highlight .s2 {
-  color: #d14;
+  color: #0563bb;
 }
 .highlight .se {
-  color: #d14;
+  color: #0563bb;
 }
 .highlight .sh {
-  color: #d14;
+  color: #0563bb;
 }
 .highlight .si {
-  color: #d14;
+  color: #0563bb;
 }
 .highlight .sx {
-  color: #d14;
+  color: #0563bb;
 }
 .highlight .sr {
   color: #009926;
 }
 .highlight .s1 {
-  color: #d14;
+  color: #0563bb;
 }
 .highlight .ss {
   color: #990073;
