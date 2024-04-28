@@ -373,13 +373,6 @@ particlesJS("particles-js", {
   retina_detect: true
 });
 
-document.getElementById('search-input').addEventListener('input', function (e) {
-  const searchIcon = document.querySelector('.search-bar .icon');
-  if (this.value) {
-    searchIcon.style.display = 'none';
-  } else {
-    searchIcon.style.display = 'block';
-  }
-});
+
   
 
