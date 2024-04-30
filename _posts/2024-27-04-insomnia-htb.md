@@ -147,8 +147,8 @@ var_dump(!5); // if (false == 2)
 
 <div class="article-code">
   {% highlight sh %}
-└─$ php test.php                                                                         
-                    
+└─$ php test.php
+
 bool(true)
 bool(false)
 bool(false)
