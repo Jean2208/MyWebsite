@@ -46,20 +46,20 @@ enabled: true
       </div>
 
       <div class="top-separator" data-aos="fade-up"></div>
-
-      <div class="articles-summary" data-aos="fade-up">
+      <div class="post-row">
         {% for post in site.posts %}
-        <div class="article">
-          <h2>
+        <div class="article"> 
+            <img src="{{ post.image }}">
+          <h4>
             <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-          </h2>
+          </h4>
           <p class="date">{{ post.date | date: '%B %d, %Y' }}</p>
           <p class="excerpt">
             {{ post.excerpt | strip_html | truncate: 160 }}
           </p>
         </div>
-        <div class="separator" data-aos="fade-up"></div>
         {% endfor %}
+      </div>
       </div>
       {% if paginator.total_pages > 1 %}
       <div class="pagination">
