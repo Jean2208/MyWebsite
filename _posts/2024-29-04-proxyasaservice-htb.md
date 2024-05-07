@@ -2,7 +2,11 @@
 layout: article
 title:  "ProxyAsAService - HackTheBox Writeup"
 date: "2024-04-29"
+image: "/assets/img/proxyasaservice/homepage.png"
 ---
+
+
+ProxyAsAService is a Flask website challenge in HackTheBox that features misconfigurations in proxies, allowing us to trick the application into thinking our requests come from the local network.
 
 By looking at the name of the challenge and glancing over the code, we can assume we will have to exploit faulty configurations in some proxy to get our flag.
 
