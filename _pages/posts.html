@@ -14,6 +14,9 @@ enabled: true
   <link href="/assets/css/style.css" rel="stylesheet" />
   <link href="{{ 'assets/css/posts.css' | relative_url }}" rel="stylesheet" />
   <link href="/assets/css/navbar.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+  rel="stylesheet">
+
   
 </head>
 
@@ -30,26 +33,20 @@ enabled: true
 
     <div class="wrapper" data-aos="fade-up">
       <div class="row" data-aos="fade-up">
-        <div class="col-md-2" data-aos="fade-up">
+        <div class="col-12 d-flex align-items-center">
           <h2>Posts</h2>
-        </div>
-        <div class="col-md-10" data-aos="fade-up">
-          <div class="input-group mb-3">
+          <div class="input-group">
             <input type="text" class="form-control" placeholder="Search..." aria-label="Search" />
             <div class="input-group-append">
-              <button class="btn btn-outline-secondary" type="button">
-                <i class="fas fa-search"></i>
-              </button>
             </div>
           </div>
         </div>
       </div>
-
       <div class="top-separator" data-aos="fade-up"></div>
       <div class="post-row">
         {% for post in site.posts %}
         <div class="article"> 
-            <img src="{{ post.image }}">
+          <img src="{{ post.image }}">
           <h4>
             <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
           </h4>
@@ -57,31 +54,62 @@ enabled: true
           <p class="excerpt">
             {{ post.excerpt | strip_html | truncate: 160 }}
           </p>
+          {% for tag in post.tags %}
+          <div class="tag">
+            <span class="tag-label">{{ tag }}</span>
+          </div>
+          {% endfor %}
         </div>
         {% endfor %}
       </div>
-      </div>
-      {% if paginator.total_pages > 1 %}
-      <div class="pagination">
-        {% if paginator.previous_page %}
-        <a href="{{ paginator.previous_page_path }}" class="page-previous">&laquo; Prev</a>
-        {% endif %} {% for page in (1..paginator.total_pages) %} {% if page ==
-        paginator.page %}
-        <span class="page-number current">{{ page }}</span>
-        {% else %} {% if page == 1 %}
-        <a href="/posts/" class="page-number">1</a>
-        {% else %}
-        <a href="{{ '/posts/' | append: page }}" class="page-number">{{ page }}</a>
-        {% endif %} {% endif %} {% endfor %} {% if paginator.next_page %}
-        <a href="{{ paginator.next_page_path }}" class="page-next">Next &raquo;</a>
-        {% endif %}
-      </div>
+    </div>
+    {% if paginator.total_pages > 1 %}
+    <div class="pagination">
+      {% if paginator.previous_page %}
+      <a href="{{ paginator.previous_page_path }}" class="page-previous">&laquo; Prev</a>
+      {% endif %} {% for page in (1..paginator.total_pages) %} {% if page ==
+      paginator.page %}
+      <span class="page-number current">{{ page }}</span>
+      {% else %} {% if page == 1 %}
+      <a href="/posts/" class="page-number">1</a>
+      {% else %}
+      <a href="{{ '/posts/' | append: page }}" class="page-number">{{ page }}</a>
+      {% endif %} {% endif %} {% endfor %} {% if paginator.next_page %}
+      <a href="{{ paginator.next_page_path }}" class="page-next">Next &raquo;</a>
       {% endif %}
     </div>
+    {% endif %}
   </div>
+</div>
 
-  {% include footer.html %} {% include arrowup.html %} {% include JSfiles.html
-  %}
+<script>
+
+  const searchInput = document.querySelector('.form-control');
+  const postContainer = document.querySelector('.post-row');
+  const articles = postContainer.querySelectorAll('.article');
+
+  searchInput.addEventListener('input', filterPosts);
+
+  function filterPosts() {
+    const searchValue = searchInput.value.toLowerCase();
+
+    articles.forEach(article => {
+
+      const postTitle = article.querySelector('h4 a').textContent.toLowerCase();
+      const postContent = article.querySelector('.excerpt').textContent.toLowerCase();
+
+      if (postTitle.includes(searchValue) || postContent.includes(searchValue)) {
+        article.style.display = 'block';
+      } else {
+        article.style.display = 'none';
+      }
+    })
+  }
+
+</script>
+
+{% include footer.html %} {% include arrowup.html %} {% include JSfiles.html
+%}
 </body>
 
 </html>

@@ -3,6 +3,7 @@ layout: article
 title:  "Insomnia - HackTheBox Writeup"
 date: "2024-04-27"
 image: "/assets/img/insomnia/homescreen.png"
+tags: ["website", "php"]
 ---
 
 Insomnia is a PHP website challenge in HackTheBox that features a vulnerability in the login functionality, allowing us to bypass password checks for the administrator user.
