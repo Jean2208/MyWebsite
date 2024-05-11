@@ -28,87 +28,75 @@
   </header>
 
 
-    <!-- ======= Hero Section ======= -->
-    <section id="hero" class="d-flex flex-column justify-content-center">
-      <div id="particles-js"></div>
-      <div class="container" data-aos="zoom-in" data-aos-delay="100">
-        <div>
-          <h1>Jean Penso</h1>
-          <p><span class="typed" data-typed-items="Security Engineer, Ethical Hacker, Programmer"></span></p>
+  <!-- ======= Hero Section ======= -->
+  <section id="hero" class="d-flex flex-column justify-content-center">
+    <div id="particles-js"></div>
+    <div class="container" data-aos="zoom-in" data-aos-delay="100">
+      <div>
+        <h1>Jean Penso</h1>
+        <p><span class="typed" data-typed-items="Security Engineer, Ethical Hacker, Programmer"></span></p>
+      </div>
+      <div class="profile-pic">
+        <img src="/assets/img/jean.jpg" alt="Profile Picture">
+      </div>
+    </div>
+  </section>
+
+  <!-- End Hero -->
+
+  <main id="main" class="main-content">
+
+    <!-- ======= Posts Section ======= -->
+    <section id="posts" class="posts section-bg">
+      <div class="container">
+        <div class="section-title">
+          <h2>Recent Posts</h2>
         </div>
-        <div class="profile-pic">
-          <img src="/assets/img/jean.jpg" alt="Profile Picture">
-        </div>
+        <div class="posts-container" data-aos="fade-up">
+          {% for post in site.posts limit: 3 %}
+          <a href="{{ post.url | relative_url }}">
+          <div class="post-homepage" data-aos="fade-up">
+            <img src="{{ post.image }}">
+          <h4>
+            {{ post.title }}
+          </h4>
+          </div>
+          </a>
+          {% endfor %}
+        </div> <!-- End of row -->
       </div>
     </section>
 
-    <!-- End Hero -->
-
-    <main id="main">
-
-      <!-- ======= Posts Section ======= -->
-      <section id="posts" class="posts section-bg">
-        <div class="container">
-
-          <div class="section-title">
-            <h2>Recent Posts</h2>
-          </div>
-
-          <div class="row" data-aos="fade-up">
-            <!-- Second column for the text and gif -->
-            <div class="col-md-4 about" data-aos="fade-up">
-              <div class="about-inner-box" data-aos="fade-up">
-                <img src="assets/img/Devvortex.png" alt="">
-              </div>
-            </div>
-            <div class="col-md-4 about" data-aos="fade-up">
-              <div class="about-inner-box" data-aos="fade-up">
-                <img src="assets/img/Devvortex.png" alt="">
-              </div>
-            </div>
-            <div class="col-md-4 about" data-aos="fade-up">
-              <div class="about-inner-box" data-aos="fade-up">
-                <img src="assets/img/Devvortex.png" alt="">
-              </div>
-            </div>
-          </div> <!-- End of row -->
+    <!-- ======= About Section ======= -->
+    <section id="about" class="about">
+      <div class="container" data-aos="fade-up">
+        <div class="section-title">
+          <h2>About Me</h2>
         </div>
-      </section>
 
-      <!-- ======= About Section ======= -->
-      <section id="about" class="about">
-        <div class="container" data-aos="fade-up">
-          <div class="section-title">
-            <h2>About Me</h2>
+        <!-- Add a row here to contain the columns -->
+        <div class="row" data-aos="fade-up">
+          <!-- Second column for the text and gif -->
+          <div class="col-md-12 about" data-aos="fade-up">
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            </p>
           </div>
+        </div> <!-- End of row -->
+      </div>
+    </section>
 
-          <!-- Add a row here to contain the columns -->
-          <div class="row" data-aos="fade-up">
-            <!-- Second column for the text and gif -->
-            <div class="col-md-12 about" data-aos="fade-up">
-              <div class="about-inner-box" data-aos="fade-up">
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                </p>
-              </div>
-            </div>
-          </div> <!-- End of row -->
-        </div>
-      </section>
+    <!-- End About Section -->
 
-      <!-- End About Section -->
-
-    </main><!-- End #main -->
+  </main><!-- End #main -->
 
 
 
-    {% include footer.html %}
+  {% include footer.html %}
 
-    {% include arrowup.html %}
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
-
-    {% include JSfiles.html %}
+  {% include JSfiles.html %}
 
 
 
