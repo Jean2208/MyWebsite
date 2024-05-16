@@ -46,7 +46,7 @@ enabled: true
       <div class="post-row">
         {% for post in site.posts %}
         <div class="article"> 
-          <img src="{{ post.image }}">
+          <a href="{{ post.url | relative_url }}"><img src="{{ post.image }}"></a>
           <h4>
             <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
           </h4>
