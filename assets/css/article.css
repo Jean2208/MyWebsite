@@ -46,8 +46,8 @@ html, body {
 }
 
 .article-image {
-  margin-top: 50px;
-  margin-bottom: 50px;
+  margin-top: 30px;
+  margin-bottom: 30px;
 }
 
 .article-image img {
@@ -69,8 +69,8 @@ html, body {
 }
 
 .article-code {
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-top: 30px;
+  margin-bottom: 30px;
 }
 
 .article-code p {

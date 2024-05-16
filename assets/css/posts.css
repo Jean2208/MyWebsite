@@ -84,8 +84,6 @@ h2 {
   transform: translateX(-50%); /* Precise centering */
 }
 
-
-
 .top-separator {
   position: relative; /* Required for absolute positioning of pseudo-elements */
   height: 10px; /* Adjust as needed, should be enough to contain both ::before and ::after */
