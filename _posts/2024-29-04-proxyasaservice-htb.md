@@ -237,7 +237,7 @@ Let's try it out. We must remember to call the application by its local port, no
 
 <div class="article-image">
   <img src="/assets/img/proxyasaservice/flag.png">
-<p>http://94.237.62.195:45170/?url=@0.0.0.0:1337/debug/environment</p>
+<p>/?url=@0.0.0.0:1337/debug/environment</p>
 </div>
 
 The application successfully returns a response showing all the environment variables, including the flag.
