@@ -336,7 +336,7 @@ sudo syscheck
 
 We get the shell and the root flag.
 
-<h4>Post explotation</h4>
+<h4>Post Explotation</h4>
 
 It's always important to not only know how to exploit applications, but to also understand why and where they are vulnerable to provide better security.
 
