@@ -5,6 +5,12 @@ html, body {
   flex-direction: column;
 }
 
+h4 {
+  margin-top: 40px; 
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
 .main-content {
   flex: 1;
   margin-bottom: 30px;
