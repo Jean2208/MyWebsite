@@ -357,6 +357,7 @@ section {
 } 
 
 .post-homepage img {
+  min-height: 190px;
   height: auto;
   width: 350px;
   border: 1px solid black;
@@ -365,6 +366,7 @@ section {
 
 @media (max-width: 992px) {
   .post-homepage img {
+    min-height: 0px;
     height: auto;
     width: 300px;
     border: 1px solid black;
@@ -379,7 +381,7 @@ section {
 
 .post-homepage h4 {
   margin-top: 20px;
-  font-size: 17px;
+  font-size: 15px;
   font-weight: bold;
 } 
 

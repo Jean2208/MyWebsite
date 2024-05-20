@@ -153,6 +153,7 @@ h2 {
 
 .article img {
   width: 100%;
+  min-height: 233.317px;
   height: auto;
   margin-bottom: 20px;
   border: 1px solid black;
@@ -169,6 +170,7 @@ h2 {
 
   .article img {
     width: 100%;
+    min-height: 140.917px;
     height: auto;
     margin-bottom: 20px;
     border: 1px solid black;
