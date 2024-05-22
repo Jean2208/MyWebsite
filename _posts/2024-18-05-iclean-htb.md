@@ -148,75 +148,35 @@ Since the `+` sign represents a space character when the `Content-Type` of the r
 
 We get the cookie.
 
+Let's see if we can get access to the dashboard with the cookie. With the intercept on inside burp, navigate to /dashboard and add a Cookie header to the request.
 
+<div class="article-image">
+  <img src="/assets/img/iclean/dashboardburp.png">
+</div>
 
+<div class="article-image">
+  <img src="/assets/img/iclean/dashboard.png">
+  <p>/dashboard</p>
+</div>
 
+We now have access.
 
+To avoid the need to attach a Cookie header to every request in burpsuite, we can instead add the cookie under our browser configurations. In Firefox you can Right Click -> Inspect -> Storage -> Cookies, and make a new entry with Name `session` and the value of the cookie.
 
+<div class="article-image">
+  <img src="/assets/img/iclean/consolecookie.png">
+</div>
 
+The dashboard has many inputs, I tried passing a `curl` to every input to see if it would reach my python server but that didn't work. Assuming there's no command injection in these inputs, I got stuck and decided to look for help in forums. Someone gave a hint for SSTI (Server-Side Template Injection).
 
+When exploiting server-side template injection, we have to know the technologies, programming language, and template rendering libraries to be able to pass the correct malicious input. If we use an extension for our browser such as [Wappalyzer][Wappalyzer] we can see that this website uses Flask with Python. The most popular Python template library is [Jinja][Jinja].
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<div class="article-image">
+  <img src="/assets/img/iclean/wappalyzer.png">
+</div>
 
 [PortSwigger]: https://portswigger.net/support/using-sql-injection-to-bypass-authentication
 
+[Wappalyzer]: https://www.wappalyzer.com/
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+[Jinja]: https://jinja.palletsprojects.com/
