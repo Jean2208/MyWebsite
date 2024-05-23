@@ -169,14 +169,100 @@ To avoid the need to attach a Cookie header to every request in burpsuite, we ca
 
 The dashboard has many inputs, I tried passing a `curl` to every input to see if it would reach my python server but that didn't work. Assuming there's no command injection in these inputs, I got stuck and decided to look for help in forums. Someone gave a hint for SSTI (Server-Side Template Injection).
 
-When exploiting server-side template injection, we have to know the technologies, programming language, and template rendering libraries to be able to pass the correct malicious input. If we use an extension for our browser such as [Wappalyzer][Wappalyzer] we can see that this website uses Flask with Python. The most popular Python template library is [Jinja][Jinja].
+When exploiting server-side template injection, we have to know the technologies, programming language, and template rendering libraries the application uses to be able to pass the correct malicious input. If we use an extension for our browser such as [Wappalyzer][Wappalyzer] we can see that this website uses Flask with Python. 
 
 <div class="article-image">
   <img src="/assets/img/iclean/wappalyzer.png">
+  <p>Wappalyzer</p>
 </div>
+
+In the dashboard we have a /QRGenerator subdirectory, if we pass the `invoice-id` and `qr-link` to the inputs it redirects us to this page:
+
+<div class="article-image">
+  <img src="/assets/img/iclean/reportqr.png">
+</div>
+
+The image we passed with the `qr-link` is rendered at the bottom right.
+
+Here's the rendered html img element too:
+
+<div class="article-image">
+  <img src="/assets/img/iclean/qrcodelink.png">
+</div>
+
+The most popular Python template rendering library is [Jinja2][Jinja] which comes built-in by default with Flask.
+
+For rendering dynamic content in Flask templates, Jinja uses double curly braces.
+
+<div class="article-image">
+  <img src="/assets/img/iclean/jinjavariables.png">
+  <p>Jinja documentation</p>
+</div>
+
+If we look up Jinja2 SSTI we can find some great resources.
+
+[Jinja2 SSTI - HackTricks][Jinja2 SSTI - HackTricks] 
+
+So for now, let's try to pass an input to list the directory.
+
+<div class="article-code">
+{% highlight python %}
+{% raw %}{{ request.application.__globals__.__getitem__.__builtins__.__getitem__.__import__.popen('ls').read() }}{% endraw %}
+{% endhighlight %}
+</div>
+
+Let's break down the code.
+
+- `request.application` gives you the Flask application object itself.
+
+- `__globals__` accesses all the global variables and functions available within the application's scope.
+
+- `__getitem__` is a method that allows you to access items (like dictionaries) using the `[]` operator syntax. So `__getitem__` is essentially doing `globals['__builtins__']`.
+
+- `__builtins__` is a module that contains all the built-in functions and objects in Python, like print, len, import, etc.
+
+- Another `__getitem__` is used to access something within `__builtins__`, specifically `__builtins__['__import__']`.
+
+- `__import__` is the built-in `__import__` function in Python, which is used to import modules.
+`popen('ls')` is calling the `popen` function (which is typically from the os module) and passing `ls` to run the command on the system.
+
+- `read()` is trying to read the output of the `popen` command.
+
+<div class="article-image">
+  <img src="/assets/img/iclean/qrlinkinput.png">
+  <p>/QRGenerator</p>
+</div>
+
+<div class="article-image">
+  <img src="/assets/img/iclean/internalerror.png">
+</div>
+
+It returns an internal server error. Why doesn't this input work? 
+
+<i><strong style="color:#df0000;">Spoiler:</strong> there's a function in the `app.py` file of this Flask application which sanitizes double underscores (we go over it in the post explotation section)</i>
+
+<div class="article-code">
+{% highlight python %}
+def rdu(value):
+    return str(value).replace('__', '')
+{% endhighlight %}
+</div>
+
+Replacing the underscores gives us another caviat
+
+
+
+
+
+
+
+
+
 
 [PortSwigger]: https://portswigger.net/support/using-sql-injection-to-bypass-authentication
 
 [Wappalyzer]: https://www.wappalyzer.com/
 
 [Jinja]: https://jinja.palletsprojects.com/
+
+[Jinja2 SSTI - HackTricks]: https://book.hacktricks.xyz/pentesting-web/ssti-server-side-template-injection/jinja2-ssti
