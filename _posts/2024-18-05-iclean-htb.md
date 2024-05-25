@@ -101,7 +101,7 @@ Let's stick with trying to steal cookies exploiting XSS. The only form we can tr
 
 Looks like the quote request is sent to the management team, we can maybe steal their cookies by sending some scripts with the forms.
 
-Let's try opening and python http server and use the `fetch()` function from javascript in both fields.
+Let's try opening a python http server and use the `fetch()` function from javascript in both fields.
 
 <div class="article-code">
 {% highlight sh %}
@@ -411,7 +411,7 @@ Switch user accounts with `su` and concatenate the user.txt flag.
 
 We found the first flag.
 
-We can ssh into the machine to get a better shell.
+Optionally, we can ssh into the machine to get a better shell.
 
 <div class="article-code">
 {% highlight sh %}
@@ -426,6 +426,112 @@ As always, let's check what commands we can run with sudo privileges with `sudo 
 </div>
 
 Looks like we can run a tool called `qpdf`.
+
+[QPDF's][QPDF] documentation is not the most intuitive in my opinion, but reading what it does gives us an idea on its capabilities. 
+
+*With QPDF, it is possible to copy objects from one PDF file into another.* Can we copy the contents from root.txt into a new accessible file for us?
+
+If we go to the [Basic Invocation][Basic Invocation] section we will find a usage example.
+
+<div class="article-image">
+  <img src="/assets/img/iclean/qpdfusage.png">
+</div>
+
+Let's try to copy the contents from root.txt into a new file in the current directory. Since we can run qpdf with sudo privileges, it should be able to access the /root directory with no denied permissions.
+
+<div class="article-code">
+{% highlight sh %}
+sudo qpdf /root/root.txt rootflag.txt
+{% endhighlight %}
+</div>
+
+<div class="article-image">
+  <img src="/assets/img/iclean/invalidpdf.png">
+</div>
+
+It returns an error saying that root.txt is damaged, which makes sense because root.txt is not a valid PDF, it's instead a .txt. The following image is the typical structure of a PDF file.
+
+<div class="article-image">
+  <img src="/assets/img/iclean/pdfstructure.jpg">
+</div>
+
+We need a way to copy contents from non-PDF files. Luckily, there's an option for pqdf that allows us to do just that.
+
+<div class="article-image">
+  <img src="/assets/img/iclean/embeddedfiles.png">
+</div> 
+
+In our case, the root.txt file could be considered the attachment.
+
+Our command so far is looking like this:
+
+<div class="article-code">
+{% highlight sh %}
+sudo qpdf /root/root.txt --add-attachment /root/root.txt -- rootflag.txt
+{% endhighlight %}
+</div>
+
+Since root.txt is already being handled as attachment, we need to leave `[infile]` empty. The way to do that is by using `--empty` as specified in their initial instructions.
+
+<div class="article-image">
+  <img src="/assets/img/iclean/emptyqpdf.png">
+</div> 
+
+So our new command turns out to be:
+
+<div class="article-code">
+{% highlight sh %}
+sudo qpdf --empty --add-attachment /root/root.txt -- rootflag.txt
+{% endhighlight %}
+</div>
+
+Let's run it and see what happens.
+
+<div class="article-image">
+  <img src="/assets/img/iclean/invalidstream.png">
+</div>
+
+
+We can see the structure of the PDF file. The contents from root.txt should be in between `stream` and `endstream`, but unfortunately `cat` is not a PDF viewer, so we can't see the stream.
+
+There's a command option to create a PDF file suitable for viewing in text editors.
+
+<div class="article-image">
+  <img src="/assets/img/iclean/qdfoption.png">
+</div>
+
+Let's add it to our command and run it again.
+
+<div class="article-code">
+{% highlight sh %}
+sudo qpdf --empty --add-attachment /root/root.txt -- --qdf rootflag.txt
+{% endhighlight %}
+</div>
+
+<div class="article-image">
+  <img src="/assets/img/iclean/rootflag.png">
+</div>
+
+We found the root flag.
+
+
+<h4>Post-Exploitation</h4>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -461,3 +567,7 @@ Looks like we can run a tool called `qpdf`.
 [Jinja2 SSTI - HackTricks]: https://book.hacktricks.xyz/pentesting-web/ssti-server-side-template-injection/jinja2-ssti
 
 [CrackStation]: https://crackstation.net/
+
+[QPDF]: https://qpdf.readthedocs.io/
+
+[Basic Invocation]: https://qpdf.readthedocs.io/en/stable/cli.html#basic-invocation
