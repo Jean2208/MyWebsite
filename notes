@@ -93,6 +93,31 @@ qpdf --add-attachment /root/root.txt -- - /home/flag
 
 sudo qpdf --empty rootflag.txt --qdf --add-attachment /root/root.txt --
 
+sudo qpdf
+
+Execute the tool with sudo privileges.
+
+Usage: qpdf [infile] [options] [outfile]
+
+--empty
+
+infile can be a regular file, or it can be --empty to start with an empty PDF file.
+
+--qdf
+
+create a PDF file suitable for viewing and editing in a text editor.
+
+
+--add-attachment file [options] --
+
+used to add attachments to a file
+
+
+
+
+
+
+
 
 
 
