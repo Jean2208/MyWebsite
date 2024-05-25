@@ -324,7 +324,18 @@ _laurel:x:998:998::/var/log/laurel:/bin/false
 {% endhighlight %}
 </div>
 
-We don't have any user accounts, but the presence of the MySQL service makes me remember that the website had login functionality. The db connection string secrects have to be stored either in enviroment tables or in the application python file itself.
+<div class="article-code">
+{% highlight sh %}
+www-data@iclean:/opt/app$ ls -la /home
+ls -la /home
+total 12
+drwxr-xr-x  3 root     root     4096 Sep  5  2023 .
+drwxr-xr-x 18 root     root     4096 Sep 27  2023 ..
+drwxr-x---  5 consuela consuela 4096 May 24 12:56 consuela
+{% endhighlight %}
+</div>
+
+We have a user account named `consuela`. Additionally, the presence of the MySQL service makes me remember that the website has login functionality. The db connection string secrets have to be stored either in enviroment tables or in the application python file itself.
 
 If we `ls` the current directory and read the `app.py` file, the db configurations are stored inside in plaintext.
 
@@ -365,6 +376,65 @@ db_config = {
 {% endhighlight %}
 </div>
 
+Let's use these credentials with the MySQL service and see what we can find.
+
+The mysql service in the console is a little unstable, so I decide to use the `-t` parameter to get the output directly right after connecting to the db.
+
+<div class="article-code">
+{% highlight sh %}
+www-data@iclean:/opt/app$ mysql -h 127.0.0.1 -u iclean -p capiclean -t -e "SELECT * FROM users;"
+Enter password: pxCsmnGLckUb
++----+----------+------------------------------------------------------------------+----------------------------------+
+| id | username | password                                                         | role_id                          |
++----+----------+------------------------------------------------------------------+----------------------------------+
+|  1 | admin    | 2ae316f10d49222f369139ce899e414e57ed9e339bb75457446f2ba8628a6e51 | 21232f297a57a5a743894a0e4a801fc3 |
+|  2 | consuela | 0a298fdd4d546844ae940357b631e40bf2a7847932f82c494daa1c9c5d6927aa | ee11cbb19052e40b07aac0ca060c23ee |
++----+----------+------------------------------------------------------------------+----------------------------------+
+{% endhighlight %}
+</div>
+
+We found the password hash for the same `consuela` user we found under the `/home` directory.
+
+Let's take this hash and crack it using [CrackStation][CrackStation].
+
+<div class="article-image">
+  <img src="/assets/img/iclean/crackstation.png">
+</div>
+
+Yields and exact match, `simple and clean` as the password.
+
+Switch user accounts with `su` and concatenate the user.txt flag.
+
+<div class="article-image">
+  <img src="/assets/img/iclean/usertxt.png">
+</div>
+
+We found the first flag.
+
+We can ssh into the machine to get a better shell.
+
+<div class="article-code">
+{% highlight sh %}
+ssh consuela@capiclean.htb
+{% endhighlight %}
+</div>
+
+As always, let's check what commands we can run with sudo privileges with `sudo -l`.
+
+<div class="article-image">
+  <img src="/assets/img/iclean/sudolist.png">
+</div>
+
+Looks like we can run a tool called `qpdf`.
+
+
+
+
+
+
+
+
+
 
 
 
@@ -389,3 +459,5 @@ db_config = {
 [Jinja]: https://jinja.palletsprojects.com/
 
 [Jinja2 SSTI - HackTricks]: https://book.hacktricks.xyz/pentesting-web/ssti-server-side-template-injection/jinja2-ssti
+
+[CrackStation]: https://crackstation.net/
