@@ -7,7 +7,7 @@ tags: ["linux", "website", "xss", "cookies"]
 ---
 
 
-IClean is a box in HackTheBox that features XSS vulnerabilities...
+IClean is a box in HackTheBox that features XSS, Server-Side Template Injection, and an unsafe PDF tool.
 
 Port scan the machine.
 
@@ -114,7 +114,7 @@ Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ...
   <img src="/assets/img/iclean/scripttag.png">
 </div>
 
-This script did not work. Could be the case that the `<script>` tags are filtered and sanitized. Let's try with another approach.
+This script did not work. Could be the case that the `<script>` tags are filtered and sanitized. Let's try another approach.
 
 <div class="article-image">
   <img src="/assets/img/iclean/imgscript.png">
@@ -148,7 +148,7 @@ Since the `+` sign represents a space character when the `Content-Type` of the r
 
 We get the cookie.
 
-Let's see if we can get access to the dashboard with the cookie. With the intercept on inside burp, navigate to /dashboard and add a Cookie header to the request.
+Let's see if we can get access to the dashboard with the cookie. With the intercept turned on inside burp, navigate to /dashboard and add a Cookie header to the request.
 
 <div class="article-image">
   <img src="/assets/img/iclean/dashboardburp.png">
@@ -197,8 +197,8 @@ If we look up Jinja2 SSTI we can find some great resources. The first one being 
 So, for now, let's try to pass an input to list the directory. Given their documentation, we could pass code like the following:
 
 <div class="article-code">
-{% highlight python %}
-{% raw %}{{ request.application.__globals__.__builtins__.__import__.popen('ls').read() }}{% endraw %}
+{% highlight sh %}
+{% raw %}{{ request.application.__globals__.__builtins__.__import__('os').popen('ls').read() }}{% endraw %}
 {% endhighlight %}
 </div>
 
@@ -210,12 +210,12 @@ Let's break down the code.
 
 - `__getitem__` is a method that allows you to access items (like dictionaries) using the `[]` operator syntax. So `__getitem__` is essentially doing `globals['__builtins__']`.
 
-- `__builtins__` is a module that contains all the built-in functions and objects in Python, like print, len, import, etc.
+- `__builtins__` is a module that contains all the built-in functions and objects in python, like print, len, import, etc.
 
 - Another `__getitem__` is used to access something within `__builtins__`, specifically `__builtins__['__import__']`.
 
-- `__import__` is the built-in `__import__` function in Python, which is used to import modules.
-`popen('ls')` is calling the `popen` function (which is typically from the os module) and passing `ls` to run the command on the system.
+- `__import__` is the built-in `import` function in python, which is used to import modules, in this case it's importing `os`.
+`popen('ls')` is calling the `popen` function from the `os` module and passing `ls` to run the command on the system.
 
 - `read()` is trying to read the output of the `popen` command.
 
@@ -335,7 +335,7 @@ drwxr-x---  5 consuela consuela 4096 May 24 12:56 consuela
 {% endhighlight %}
 </div>
 
-We have a user account named `consuela`. Additionally, the presence of the MySQL service makes me remember that the website has login functionality. The db connection string secrets have to be stored either in enviroment tables or in the application python file itself.
+We have a user account named `consuela`. Additionally, the presence of the MySQL service makes me remember that the website has login functionality. The db connection string secrets have to be stored either in environment tables or in the application file itself.
 
 If we `ls` the current directory and read the `app.py` file, the db configurations are stored inside in plaintext.
 
@@ -427,9 +427,9 @@ As always, let's check what commands we can run with sudo privileges with `sudo 
 
 Looks like we can run a tool called `qpdf`.
 
-[QPDF's][QPDF] documentation is not the most intuitive in my opinion, but reading what it does gives us an idea on its capabilities. 
+[QPDF's][QPDF] documentation is not the most intuitive in my opinion, but reading what it does gives us an idea of its capabilities. 
 
-*With QPDF, it is possible to copy objects from one PDF file into another.* Can we copy the contents from root.txt into a new accessible file for us?
+*"With QPDF, it is possible to copy objects from one PDF file into another"*. Can we copy the contents from root.txt into a new accessible file for us?
 
 If we go to the [Basic Invocation][Basic Invocation] section we will find a usage example.
 
@@ -449,13 +449,13 @@ sudo qpdf /root/root.txt rootflag.txt
   <img src="/assets/img/iclean/invalidpdf.png">
 </div>
 
-It returns an error saying that root.txt is damaged, which makes sense because root.txt is not a valid PDF, it's instead a .txt. The following image is the typical structure of a PDF file.
+It returns an error saying that root.txt is damaged, which makes sense because root.txt is not a valid PDF, it's instead a .txt. The following image is the typical structure of a PDF file:
 
 <div class="article-image">
   <img src="/assets/img/iclean/pdfstructure.jpg">
 </div>
 
-We need a way to copy contents from non-PDF files. Luckily, there's an option for pqdf that allows us to do just that.
+We need a way to copy contents from non-PDF files. Luckily, there's an option for qpdf that allows us to do just that.
 
 <div class="article-image">
   <img src="/assets/img/iclean/embeddedfiles.png">
@@ -463,7 +463,7 @@ We need a way to copy contents from non-PDF files. Luckily, there's an option fo
 
 In our case, the root.txt file could be considered the attachment.
 
-Our command so far is looking like this:
+Our command so far looks like this:
 
 <div class="article-code">
 {% highlight sh %}
@@ -471,7 +471,7 @@ sudo qpdf /root/root.txt --add-attachment /root/root.txt -- rootflag.txt
 {% endhighlight %}
 </div>
 
-Since root.txt is already being handled as attachment, we need to leave `[infile]` empty. The way to do that is by using `--empty` as specified in their initial instructions.
+Since root.txt is already being handled as an attachment, we need to leave `[infile]` empty. The way to do that is by using `--empty` as specified in their initial instructions.
 
 <div class="article-image">
   <img src="/assets/img/iclean/emptyqpdf.png">
@@ -517,45 +517,132 @@ We found the root flag.
 
 <h4>Post-Exploitation</h4>
 
+I would like to have a couple of doubts answered for this post-exploitation section.
+
+<br>
+*Does the /dashboard route intentionally redirect the user if an admin cookie is not set in the HTTP headers?*
+
+<div class="article-code">
+{% highlight python %}
+@app.route('/dashboard')
+def dashboard():
+    if session.get('role') == hashlib.md5(b'admin').hexdigest():
+        return render_template('dashboard.html')
+    else:
+        return redirect(url_for('index'))
+{% endhighlight %}
+<p>app.py</p>
+</div>
+
+The /dashboard route does intentionally redirect the user to the index page when the user does not have an admin cookie set in the headers.
 
 
+<br>
+*Why is the `service` parameter of the form at /quote vulnerable to XSS?*
 
+<div class="article-code">
+{% highlight python %}
+@app.route('/sendMessage', methods=['POST'])
+def quote_requests():
+    
+    conn = pymysql.connect(**db_config)
 
+    cursor = conn.cursor()
+    checkboxes = request.form.getlist('service')
+    email = request.form.get('email')
 
+    checkboxes_str = ', '.join(checkboxes)
 
+    query = "INSERT INTO quote_requests (checkboxes, email) VALUES (%s, %s)"
+    cursor.execute(query, (checkboxes_str, email))
+    conn.commit()
+ 
+    cursor.close()
+    conn.close()
 
+    return render_template('quote_requests_thankyou.html')
+{% endhighlight %}
+<p>app.py</p>
+</div>
 
+When we post the form with the `<img>` element in the `service` parameter, it doesn't get sanitized before being inserted into the db. In fact, we can see our payload inside the `quote_requests` table.
 
+<div class="article-image">
+  <img src="/assets/img/iclean/dbxss.png">
+</div>
 
+Jinja2 performs HTML escaping by default. But the problem with this website is that if we inspect the html file where our payload gets rendered,  the `|safe` filter removes automatic escaping and instead considers any user input as safe.
 
+<div class="article-image">
+  <img src="/assets/img/iclean/safefilter.png">
+  <p>QuoteRequestDetail.html</p>
+</div>
 
+<div class="article-image">
+  <img src="/assets/img/iclean/jinjasafefilter.png">
+</div>
 
+<br>
+*Why is the `qr-link` parameter of the form at /QRGenerator vulnerable to SSTI?*
 
+<div class="article-code">
+{% highlight python %}
+def rdu(value):
+    return str(value).replace('__', '')
+...
+@app.route('/QRGenerator', methods=['GET', 'POST'])
+def QRGenerator():
+    ...
+        if request.method == 'POST':
+            form_type = request.form['form_type']
+            if form_type == 'invoice_id':
+                ...
+            elif form_type == 'scannable_invoice':
+                qr_link = rdu(request.form['qr_link'])
+                if 'http://capiclean.htb' in qr_link:
+                    ...
+                else:
+                    
+                    {% raw %}HTML = f"{{% extends 'temporary_invoice.html' %}}{{% block parameter1 %}}"
+                    HTML += '{}'.format(qr_link)
+                    HTML += '{% endblock %}'
+                    rendered_template = render_template_string(HTML){% endraw %}
+                    
+                    return rendered_template
 
+            else:
+                return redirect(url_for('QRGenerator'))
+        return render_template('QRGenerator.html')
+    else:
+        return redirect(url_for('index'))
+{% endhighlight %}
+<p>app.py</p>
+</div>
 
+The two relevant lines of code in this snippet are:
 
+- `qr_link = rdu(request.form['qr_link'])`: sanitizes double underscores in the input by calling the `rdu()` function.
 
+- `HTML += '{}'.format(qr_link)`: adds the "sanitized" input to the HTML variable to then render it as a template.
 
+In fact, if we add a couple of print statements, we can see how the application returns an error when we pass the code with no filter bypass because the underscores of the input are removed, thus becoming invalid syntax.
 
+<div class="article-code">
+{% highlight sh %}
+jeanp@~$ curl -X POST "http://127.0.0.1:5000/QRGenerator?qr_link=%7B%7B%20request.application.__globals__.__builtins__.__import__%28%27os%27%29.popen%28%27ls%27%29.read%28%29%20%7D%7D"
+{% endhighlight %}
+<p>payload is URL-encoded and passed as param through the URL</p>
+</div>
 
+<div class="article-image">
+  <img src="/assets/img/iclean/underscoresremovederror.png">
+</div>
 
+<div class="article-image">
+  <img src="/assets/img/iclean/underscoresremovederrorresult.png">
+</div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+But since the original code we passed doesn't need any underscores, it executes normally.
 
 
 [PortSwigger]: https://portswigger.net/support/using-sql-injection-to-bypass-authentication

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="icon" href="static/images/favicon.png" type="image/png" />
+<div class="header_section">
+	<div class="container-fluid">
+        <div class="row">
+          <div class="col-md-3">
+            <div class="logo"><a href="/"><img src="{{ url_for('static', filename='images/logo.png') }}"></a></div>
+          	  <div class="menu_text">
+                <body>
+                  <h1>Quote Requests</h1>
+        {% for id in ids %}
+            <a href="http://capiclean.htb/QuoteRequests/{{id}}">ID: {{ id }}</a><br>
+        {% endfor %}
+                </body>
+          </div>
+          <div class="col-sm-5">
+            <div><img src="{{ url_for('static', filename='images/img-1.png') }}"></div>
+          </div>
+          <div class="col-md-1">
+            <div class="menu_text">
+				<div class="col-sm-5">
+              <ul>
+                <div class="togle_3">
+
+					<head>
+					    <meta charset="UTF-8">
+					    <title>Quote Requests</title>
+					</head>
+					<body>
+						<body style="background-color: #addaed;">
+					    
+					</body>
+				</div>
+			</ul>
+		</div>
+	</div>
+</div>
+</html>
