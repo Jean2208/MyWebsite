@@ -1,6 +1,6 @@
 ---
 layout: article
-title:  "Insomnia - HackTheBox Writeup"
+title:  "Insomnia - HackTheBox Write-Up"
 date: "2024-04-27"
 image: "/assets/img/insomnia/homescreen.png"
 tags: ["website", "php"]

@@ -1,6 +1,6 @@
 ---
 layout: article
-title: "Headless - HackTheBox Writeup"
+title: "Headless - HackTheBox Write-Up"
 date: "2024-05-08"
 image: "/assets/img/headless/homepage.png"
 tags: ["linux", "website", "xss", "cookies"]

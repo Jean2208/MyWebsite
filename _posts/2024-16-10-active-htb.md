@@ -1,6 +1,6 @@
 ---
 layout: article
-title: "Active - HackTheBox Writeup"
+title: "Active - HackTheBox Write-Up"
 date: "2024-10-16"
 image: "/assets/img/active/thumbnail.png"
 tags: ["active directory", "linux"]

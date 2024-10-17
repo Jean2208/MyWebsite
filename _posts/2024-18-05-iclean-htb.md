@@ -1,6 +1,6 @@
 ---
 layout: article
-title:  "IClean - HackTheBox Writeup"
+title:  "IClean - HackTheBox Write-Up"
 date: "2024-05-18"
 image: "/assets/img/iclean/homepage.png"
 tags: ["linux", "website", "xss", "cookies"]

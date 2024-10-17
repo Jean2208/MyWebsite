@@ -1,6 +1,6 @@
 ---
 layout: article
-title:  "ProxyAsAService - HackTheBox Writeup"
+title:  "ProxyAsAService - HackTheBox Write-Up"
 date: "2024-04-29"
 image: "/assets/img/proxyasaservice/homepage.png"
 tags: ["website", "flask", "python", "proxy"]
